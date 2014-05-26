@@ -2,10 +2,14 @@ language: android
 android:
   components:
     - build-tools-18.1.0
+    - android-19
 
 before_script:
-- echo ANDROID_TARGET=$ANDROID_TARGET
-- echo ANDROID=`which android`
+# download and setup NDK
+- wget http://dl.google.com/android/ndk/android-ndk-r9-linux-x86_64.tar.bz2
+- tar xf android-ndk-r9-linux-x86_64.tar.bz2
+- sudo mv android-ndk-r9 /usr/local/android-ndk
+# setup grunt
 - npm install -g grunt-cli
 # Create and start emulator
 - echo no | android create avd --force -n test -t android-16 --abi armeabi-v7a
