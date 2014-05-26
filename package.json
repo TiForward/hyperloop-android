@@ -1,0 +1,65 @@
+{
+  "name": "hyperloop-android",
+  "preferGlobal": false,
+  "version": "0.2.0",
+  "author": "Appcelerator <support@appcelerator.com>",
+  "description": "hyperloop compiler implemention for Android",
+  "license": "Apache-2.0",
+  "contributors": [
+    {
+      "name": "Jeff Haynie",
+      "url": "https://github.com/jhaynie"
+    },
+    {
+      "name": "Matt Langston",
+      "url": "https://github.com/matt-langston"
+    },
+    {
+      "name": "Kota Iguchi",
+      "url": "https://github.com/infosia"
+    },
+    {
+      "name": "Eric Wing"
+    },
+    {
+      "name": "Christopher Williams",
+      "url": "http://github.com/sgtcoolguy"
+    }
+  ],
+  "scripts": {
+    "test": "grunt test"
+  },
+  "main": "./index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/appcelerator/hyperloop-android.git"
+  },
+  "keywords": [
+    "android",
+    "hyperloop"
+  ],
+  "dependencies": {
+    "hyperloop-common": "appcelerator/hyperloop-common",
+    "hyperloop-java": "appcelerator/hyperloop-java",
+    "node-appc": "~0.1.30",
+    "async": "~0.2.9",
+    "underscore": "1.5.2",
+    "wrench": "1.5.4",
+    "semver": "2.2.1",
+    "uglify-js": "^2.4.13",
+    "prompt": "~0.2.12",
+    "ejs": "~0.8.4"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "mocha": "~1.14.0",
+    "should": "~3.3.1",
+    "istanbul": "~0.1.44",
+    "grunt-mocha-test": "~0.7.0",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-jshint": "~0.7.1"
+  },
+  "engines": {
+    "node": ">=0.10.15"
+  }
+}
