@@ -3,8 +3,9 @@
  */
 var spawn = require('child_process').spawn,
 	path = require('path'),
-	log = require('hyperloop-common').log,
-	Command = require('hyperloop-common').Command,
+	hyperloop = require('../../lib/dev').require('hyperloop-common'),
+	log = hyperloop.log,
+	Command = hyperloop.Command,
 	androidlib = require('../../lib/android');
 
 function tailLog(options,callback) {
