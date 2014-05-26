@@ -7,12 +7,12 @@ var should = require('should'),
     appc = require('node-appc'),
     metabase = require('../lib/metabase'),
     wrench = require('wrench'),
-    TMP = path.join('.', '_tmp');
+    TMP = path.join('.', '_tmp'),
+    androidPath;
 
 describe("Android metabase", function() {
 
 	before(function(done){
-		this.timeout(10000);
 
 		wrench.mkdirSyncRecursive(TMP, 0755);
 
@@ -23,7 +23,7 @@ describe("Android metabase", function() {
 		appc.android.detect(function(results){
 			android_sdk = results.sdkPath || android_sdk;
 			if (!android_sdk) {
-				throw new Error("Can't find ANDROID SDK");
+				return done("Can't find ANDROID SDK");
 			}
 
 			// try and find android
@@ -38,7 +38,7 @@ describe("Android metabase", function() {
 					}
 				}
 			}
-			throw new Error('Android SDK with version ' + (versions.join(' or ')) + ' not found under $ANDROID_SDK_ROOT.');
+			done('Android SDK with version ' + (versions.join(' or ')) + ' not found under $ANDROID_SDK_ROOT.');
 		});
 	});
 
@@ -52,8 +52,6 @@ describe("Android metabase", function() {
 	});
 
 	it("should parse Android SDK libraries",function(done) {
-		this.timeout(10000);
-
 		should.exist(androidPath);
 
 		metabase.loadMetabase(androidPath, {force:true, platform:'android', cacheDir:TMP}, function(err,json){
