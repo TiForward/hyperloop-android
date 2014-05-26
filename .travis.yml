@@ -4,6 +4,7 @@ android:
     - build-tools-18.1.0
 
 before_script:
+- echo ANDROID_TARGET=$ANDROID_TARGET
 - npm install -g grunt-cli
 # Create and start emulator
 - echo no | android create avd --force -n test -t android-16 --abi armeabi-v7a
