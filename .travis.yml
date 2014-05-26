@@ -9,6 +9,9 @@ before_script:
 - wget http://dl.google.com/android/ndk/android-ndk-r9-linux-x86_64.tar.bz2
 - tar xf android-ndk-r9-linux-x86_64.tar.bz2
 - sudo mv android-ndk-r9 /usr/local/android-ndk
+# sym link because currently node-appc looks here
+- sudo ln -s /usr/local/android-sdk /usr/android-sdk
+- sudo ln -s /usr/local/android-ndk /usr/android-ndk
 # setup grunt
 - npm install -g grunt-cli
 # Create and start emulator
