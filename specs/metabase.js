@@ -11,9 +11,9 @@ var should = require('should'),
     androidPath;
 
 describe("Android metabase", function() {
+	this.timeout(30000);
 
 	before(function(done){
-
 		wrench.mkdirSyncRecursive(TMP, 0755);
 
 		var p = process.env.PATH.split(path.delimiter),
