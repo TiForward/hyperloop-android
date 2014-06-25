@@ -12,6 +12,7 @@ var fs = require('fs'),
 	log = hyperloop.log,
 	util = hyperloop.util,
 	appc = require('node-appc'),
+	platform_library = require('../../lib/library');
 	androidlib = require('../../lib/android');
 
 function createAndroidProjectTemplate(options, dest, done) {
@@ -39,21 +40,6 @@ function createAndroidProjectTemplate(options, dest, done) {
 	});
 }
 
-// function validate(state,done) {
-// 	log.info('Validating...');
-
-// 	var options = state.options;
-
-// 	required(options,'name','specify the module name');
-// 	required(options,'appid','specify the application identifier (such as com.app.id) for the app');
-
-// 	if (!options.target) {
-// 		options.target = 'release';
-// 	}
-
-// 	return done(null, true);
-// }
-
 module.exports = new Command(
 	'package',
 	'Package the application for Android',
@@ -72,9 +58,12 @@ module.exports = new Command(
 			android = androidlib.findAndroidPath(options,true),
 			templateDir = path.join(__dirname,'..','..','templates');
 
+		// FIXME on Android srcdir is missing
+		options.srcdir = path.join(options.dest,'src');
 
 		createAndroidProjectTemplate(options, appDest, function(err) {
 			if (err) done(err);
+
 			var from = path.join(templateDir, 'java', 'AppActivity.java');
 			var to = path.join(appDest, 'src', options.appid.replace(/\./g, path.sep), appfile);
 			log.debug('Copying Android activity file to ' + to);
@@ -91,6 +80,9 @@ module.exports = new Command(
 			if (fs.existsSync(custom_classes_file)) {
 				var custom_classes = JSON.parse(fs.readFileSync(custom_classes_file),'utf8');
 				custom_classes.forEach(function(c) {
+					log.debug('Generating custom class '+c);
+					platform_library.generateCustomJavaClass(options, state, state.metabase, c);
+
 					var filedir  = c.substr(0, c.lastIndexOf('.')).replace(/\./g, path.sep);
 					var filename = path.join(filedir, c.substr(c.lastIndexOf('.')+1)+'.java');
 					from = path.join(options.srcdir, 'java', filename);
@@ -140,13 +132,3 @@ module.exports = new Command(
 	}	
 );
 
-// /*
-//  * Check to make sure that the `name` key is present in `options` and if not
-//  * exit with the error message `help`
-//  * TODO Move to common
-//  */
-// function required(options, name, help) {
-// 	if (!options[name]) {
-// 	   log.fatal('Missing required options ' + ('--' + name).magenta.bold + ' which should ' + help);
-// 	}
-// }

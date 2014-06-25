@@ -11,7 +11,7 @@ import android.util.Log;
 
 public final class <%=AppActivityName%> extends Activity
 {
-    private static final String TAG = "<%=AppActivityName%>";
+    private static final String TAG = "<%=AppPackage%>.<%=AppActivityName%>";
 
     static {
         Log.d(TAG,"Starting <%=AppPackage%>.<%=AppActivityName%>");
