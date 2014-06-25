@@ -77,35 +77,3 @@ function onCreate(savedInstanceState) {
 
 	Hyperloop.method(self, 'setContentView(android.view.View)').call(main);
 }
-
-/*
-var main = Hyperloop.method('android.widget.FrameLayout','<init>(android.content.Context)').call(AppActivity);
-var mainParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.TOP);
-main.setLayoutParams(mainParams);
-
-var red = new View(this);
-red.setBackgroundColor(Color.RED);
-var redParams = new LayoutParams(200, 200, Gravity.TOP);
-red.setLayoutParams(redParams);
-red.setOnTouchListener(drag);
-
-var blue = new View(this);
-blue.setBackgroundColor(Color.BLUE);
-var blueParams = new LayoutParams(200, 200, Gravity.TOP);
-blueParams.setMargins(0, 300, 0, 0);
-blue.setLayoutParams(blueParams);
-blue.setOnTouchListener(drag);
-
-var yellow = new View(this);
-yellow.setBackgroundColor(Color.YELLOW);
-var yellowParams = new LayoutParams(200, 200, Gravity.TOP);
-yellowParams.setMargins(0, 600, 0, 0);
-yellow.setLayoutParams(yellowParams);
-yellow.setOnTouchListener(drag);
-
-main.addView(yellow);
-main.addView(blue);
-main.addView(red);
-
-setContentView(main);
-*/
