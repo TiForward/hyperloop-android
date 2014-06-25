@@ -86,24 +86,6 @@ EXPORTAPI void HyperloopNativeLogger(const char *str)
 }
 
 /**
- * native implementation of path resolver
- */
-EXPORTAPI char * HyperloopNativePathResolve(JSContextRef ctx, const char *path, const char *dir, JSValueRef *exception)
-{
-#ifdef __ANDROID__
-    //TODO
-#endif 
-
-    //TODO: this is currently too simplistic and needs to be fully implemented
-    std::string p(dir);
-    p+=std::string(path);
-    char *copy = new char[p.length()+1];
-    strncpy(copy,p.c_str(),p.length());
-    copy[p.length()]='\0';
-    return copy;
-}
-
-/**
  * std::to_string alternative as Android NDK doesn't have it
  */
 template <typename T>
@@ -240,41 +222,6 @@ bool Hyperloop::NativeObject<jobject>::toBoolean(JSContextRef ctx, JSValueRef* e
         return false;
     }
     return result == JNI_TRUE ? true : false;
-}
-
-/// jint ///
-
-template<>
-void Hyperloop::NativeObject<jint>::release() {}
-
-template<>
-void Hyperloop::NativeObject<jint>::retain() {}
-
-template<>
-bool Hyperloop::NativeObject<jint>::hasInstance(JSContextRef ctx, JSValueRef other, JSValueRef* exception)
-{
-    if (JSValueIsNumber(ctx, other)) {
-        return true;
-    }
-    return false;
-}
-
-template<>
-std::string Hyperloop::NativeObject<jint>::toString(JSContextRef ctx, JSValueRef* exception)
-{
-    return to_string(this->object);
-}
-
-template<>
-double Hyperloop::NativeObject<jint>::toNumber(JSContextRef ctx, JSValueRef* exception)
-{
-    return (double)this->object;
-}
-
-template<>
-bool Hyperloop::NativeObject<jint>::toBoolean(JSContextRef ctx, JSValueRef* exception)
-{
-    return static_cast<bool>(this->object);
 }
 
 /**
@@ -503,8 +450,8 @@ EXPORTAPI JSValueRef JavaObjectArray_ToJSValue(JSContextRef ctx, jobject instanc
     return result;
 }
 
-EXPORTAPI jobject java_lang_Boolean_constructor_1(JSContextRef ctx, const JSValueRef arguments[], JSValueRef* exception);
-EXPORTAPI jobject java_lang_Double_constructor_1(JSContextRef ctx, const JSValueRef arguments[], JSValueRef* exception);
+EXPORTAPI jobject java_lang_Boolean_constructor__Z_V(JSContextRef ctx, const JSValueRef arguments[], JSValueRef* exception);
+EXPORTAPI jobject java_lang_Double_constructor__D_V(JSContextRef ctx, const JSValueRef arguments[], JSValueRef* exception);
 
 EXPORTAPI jobject JSValueTo_JavaObject(JSContextRef ctx, JSValueRef value, JSValueRef *exception)
 {
@@ -532,18 +479,18 @@ EXPORTAPI jobject JSValueTo_JavaObject(JSContextRef ctx, JSValueRef value, JSVal
     if (JSValueIsBoolean(ctx,value))
     {
         JSValueRef args[] = {value};
-        return java_lang_Boolean_constructor_1(ctx,args,exception);
+        return java_lang_Boolean_constructor__Z_V(ctx,args,exception);
     }
     if (JSValueIsNumber(ctx,value))
     {
         JSValueRef args[] = {value};
-        return java_lang_Double_constructor_1(ctx,args,exception);
+        return java_lang_Double_constructor__D_V(ctx,args,exception);
     }
     return nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-EXPORTAPI  JSValueRef HyperloopLoad_app (JSValueRef *exception);
+EXPORTAPI JSValueRef HyperloopAppRequire(JSValueRef *exception);
 
 EXPORTAPI void JNICALL Java_org_appcelerator_hyperloop_Hyperloop_loadApp
    (JNIEnv *env, jclass jcls)
@@ -553,7 +500,24 @@ EXPORTAPI void JNICALL Java_org_appcelerator_hyperloop_Hyperloop_loadApp
     google::InstallFailureSignalHandler();
 #endif
     LOGD("Java_app_loadApp")
+    Hyperloop::JNIEnv e;
     JSValueRef exception = nullptr;
-    HyperloopLoad_app(&exception);
+    HyperloopAppRequire(&exception);
+    if (exception!=nullptr) {
+        LOGD("Java_app_loadApp raised JS exception");
+        JSStringRef str = JSValueToStringCopy(HyperloopGlobalContext(), exception, NULL);
+        size_t len = JSStringGetMaximumUTF8CStringSize(str);
+        char buf[len];
+        JSStringGetUTF8CString(str, (char *)&buf, len);
+        JSStringRelease(str);
+#ifdef __ANDROID__
+        LOGE("%s", buf);
+#else
+        LOGE(buf);
+#endif
+    }
+    if (e.CheckJavaException(HyperloopGlobalContext(), &exception)) {
+        LOGD("Java_app_loadApp raised Java exception");
+    }
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////
