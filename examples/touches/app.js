@@ -29,7 +29,6 @@ function onTouch(v, e) {
 	var view  = v.cast('android.view.View');
 	var event = e.cast('android.view.MotionEvent');
 
-    // start timer for iteration
     var _params = view.getLayoutParams();
     var params = _params.cast('android.view.ViewGroup$MarginLayoutParams'); // TODO params = view.getLayoutParams().cast('..') does not work
     var action = event.getAction();
