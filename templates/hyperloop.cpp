@@ -114,7 +114,7 @@ std::string to_string(T value)
 
 namespace Hyperloop
 {
-typedef Hyperloop::NativeObject<jobject *> * NativeObjectJava;
+typedef Hyperloop::NativeObject<jobject> * NativeObjectJava;
     
 static NativeObjectJava ToNativeObjectJava(void* p) {
     return reinterpret_cast<NativeObjectJava>(p);
@@ -123,6 +123,10 @@ static NativeObjectJava ToNativeObjectJava(void* p) {
 template<>
 void Hyperloop::NativeObject<jobject>::release()
 {
+    if (this->object == nullptr)
+    {
+        return;
+    }
     Hyperloop::JNIEnv env;
     env->DeleteGlobalRef(this->object);
 }
@@ -130,6 +134,10 @@ void Hyperloop::NativeObject<jobject>::release()
 template<>
 void Hyperloop::NativeObject<jobject>::retain()
 {
+    if (this->object == nullptr)
+    {
+        return;
+    }
     Hyperloop::JNIEnv env;
     this->object = env->NewGlobalRef(this->object);
 }
@@ -137,11 +145,16 @@ void Hyperloop::NativeObject<jobject>::retain()
 template<>
 bool Hyperloop::NativeObject<jobject>::hasInstance(JSContextRef ctx, JSValueRef other, JSValueRef* exception)
 {
+    if (this->object == nullptr)
+    {
+        return false;
+    }
+
     Hyperloop::JNIEnv env;
     auto p = JSObjectGetPrivate(JSValueToObject(ctx,other,0));
     if (p!=nullptr) {
         jclass clazz = env->GetObjectClass(this->object);
-        jobject objectB = *ToNativeObjectJava(p)->getObject();
+        jobject objectB = ToNativeObjectJava(p)->getObject();
         jboolean isInstance = env->IsInstanceOf(objectB, clazz);
         env->DeleteLocalRef(clazz);
         if (env.CheckJavaException(ctx, exception)) {
@@ -155,6 +168,10 @@ bool Hyperloop::NativeObject<jobject>::hasInstance(JSContextRef ctx, JSValueRef 
 template<>
 std::string Hyperloop::NativeObject<jobject>::toString(JSContextRef ctx, JSValueRef* exception)
 {
+    if (this->object == nullptr)
+    {
+        return "";
+    }
     Hyperloop::JNIEnv env;
     jclass cls = env->GetObjectClass(this->object);
     jmethodID mid = env->GetMethodID(cls, "toString", "()Ljava/lang/String;");
@@ -162,13 +179,19 @@ std::string Hyperloop::NativeObject<jobject>::toString(JSContextRef ctx, JSValue
     if (env.CheckJavaException(ctx, exception) || strObj == nullptr) {
         return "";
     }
-    const char* str = env->GetStringUTFChars(strObj, NULL);
-    return std::string(str);
+    const char* utfChars = env->GetStringUTFChars(strObj, NULL);
+    std::string str = std::string(utfChars);
+    env->ReleaseStringUTFChars(strObj, utfChars);
+    return str;
 }
 
 template<>
 double Hyperloop::NativeObject<jobject>::toNumber(JSContextRef ctx, JSValueRef* exception)
 {
+    if (this->object == nullptr)
+    {
+        return NAN;
+    }
     Hyperloop::JNIEnv env;
     jclass cls = env->GetObjectClass(this->object);
     jmethodID mid = env->GetMethodID(cls, "toString", "()Ljava/lang/String;");
@@ -198,6 +221,11 @@ double Hyperloop::NativeObject<jobject>::toNumber(JSContextRef ctx, JSValueRef* 
 template<>
 bool Hyperloop::NativeObject<jobject>::toBoolean(JSContextRef ctx, JSValueRef* exception)
 {
+    if (this->object == nullptr)
+    {
+        *exception = HyperloopMakeException(ctx, "Can't convert to boolean");
+        return false; 
+    }
     Hyperloop::JNIEnv env;
     jclass cls = env->GetObjectClass(this->object);
     jmethodID mid = env->GetMethodID(cls, "toString", "()Ljava/lang/String;");
@@ -237,7 +265,7 @@ bool Hyperloop::JNIEnv::IsInstanceOf(JSContextRef ctx, const char * classname, J
         {
             Hyperloop::JNIEnv env;
             jclass javaClass = env->FindClass(classname);
-            jobject objectB = *ToNativeObjectJava(p)->getObject();
+            jobject objectB = ToNativeObjectJava(p)->getObject();
             jboolean isInstance = env->IsInstanceOf(objectB, javaClass);
             env->DeleteLocalRef(javaClass);
             if (CheckJavaException(ctx, exception)) 
