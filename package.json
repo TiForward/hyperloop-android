@@ -27,8 +27,7 @@
     }
   ],
   "scripts": {
-    "test": "grunt test",
-    "preinstall": "npm ln hyperloop-common ../hyperloop-common;npm ln hyperloop-java ../hyperloop-java"
+    "test": "grunt test"
   },
   "main": "./index",
   "repository": {
