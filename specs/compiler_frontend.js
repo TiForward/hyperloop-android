@@ -21,10 +21,23 @@ describe("Android Compiler front-end", function() {
 		this.timeout(30000);
 		wrench.mkdirSyncRecursive(TMP, 0755);
 
-		metabase.loadMetabase(null, {force : true, platform : 'android', cacheDir:TMP}, function(err, json) {
+		metabase.loadMetabase(null, {force : true, platform : 'java', cacheDir:TMP}, function(err, json) {
 			javaMetabase = json;
 			// Add custom class to test against property chain
 			javaMetabase.classes['com.test.app.MyClass1'] = { 
+				'methods': {
+			        "<init>": [
+			          {
+			            "exceptions": [],
+			            "args": [],
+			            "name": "<init>",
+			            "attributes": [],
+			            "instance": true,
+			            "returnType": "void",
+			            "signature": "()V"
+			          }
+			        ]
+				},
 				'properties': {
 					'self': {
 						'name': 'self',
@@ -41,6 +54,19 @@ describe("Android Compiler front-end", function() {
 				}
 			};
 			javaMetabase.classes['com.test.app.MyClass2'] = { 
+				'methods': {
+			        "<init>": [
+			          {
+			            "exceptions": [],
+			            "args": [],
+			            "name": "<init>",
+			            "attributes": [],
+			            "instance": true,
+			            "returnType": "void",
+			            "signature": "()V"
+			          }
+			        ]
+				},
 				'properties': {
 					'self': {
 						'name': 'self',
@@ -113,7 +139,7 @@ describe("Android Compiler front-end", function() {
 		});
 		should.exist(constructor);
 		constructor.type.should.be.eql('constructor');
-		constructor.symbolname.should.be.eql('java_lang_String_constructor');
+		constructor.symbolname.should.be.eql('java_lang_String_constructor_Ljava_lang_String__V');
 		constructor.class.should.be.eql('java.lang.String');
 
 		method = _.find(state.symbols, function(value, key) {
@@ -150,7 +176,7 @@ describe("Android Compiler front-end", function() {
 		});
 		should.exist(constructor);
 		constructor.type.should.be.eql('constructor');
-		constructor.symbolname.should.be.eql('java_lang_String_constructor');
+		constructor.symbolname.should.be.eql('java_lang_String_constructor_Ljava_lang_String__V');
 		constructor.class.should.be.eql('java.lang.String');
 
 		method = _.find(state.symbols, function(value, key) {
@@ -169,7 +195,7 @@ describe("Android Compiler front-end", function() {
 		});
 		should.exist(short_constructor);
 		short_constructor.type.should.be.eql('constructor');
-		short_constructor.symbolname.should.be.eql('java_lang_Short_constructor');
+		short_constructor.symbolname.should.be.eql('java_lang_Short_constructor_S_V');
 		short_constructor.class.should.be.eql('java.lang.Short');
 		done();
 	});
@@ -196,7 +222,7 @@ describe("Android Compiler front-end", function() {
 		});
 		should.exist(constructor);
 		constructor.type.should.be.eql('constructor');
-		constructor.symbolname.should.be.eql('java_lang_String_constructor');
+		constructor.symbolname.should.be.eql('java_lang_String_constructor_Ljava_lang_String__V');
 		constructor.class.should.be.eql('java.lang.String');
 
 		method = _.find(state.symbols, function(value, key) {
@@ -215,7 +241,7 @@ describe("Android Compiler front-end", function() {
 		});
 		should.exist(short_constructor);
 		short_constructor.type.should.be.eql('constructor');
-		short_constructor.symbolname.should.be.eql('java_lang_Short_constructor');
+		short_constructor.symbolname.should.be.eql('java_lang_Short_constructor_S_V');
 		short_constructor.class.should.be.eql('java.lang.Short');
 
 		short_method = _.find(state.symbols, function(value, key) {
@@ -234,7 +260,7 @@ describe("Android Compiler front-end", function() {
 		});
 		should.exist(long_constructor);
 		long_constructor.type.should.be.eql('constructor');
-		long_constructor.symbolname.should.be.eql('java_lang_Long_constructor');
+		long_constructor.symbolname.should.be.eql('java_lang_Long_constructor_J_V');
 		long_constructor.class.should.be.eql('java.lang.Long');
 
 		long_method = _.find(state.symbols, function(value, key) {
@@ -353,7 +379,7 @@ describe("Android Compiler front-end", function() {
 		var arch = 'android',
 			build_opts = {DEBUG:true,OBFUSCATE:false},
 			state = {};
-		source = '"use hyperloop"\nvar e = new java.io.InvalidClassException();\ne.classname;';
+		source = '"use hyperloop"\nvar e = new java.io.InvalidClassException(\'String\');\ne.classname;';
 
 		should.exist(javaMetabase);
 
@@ -383,7 +409,7 @@ describe("Android Compiler front-end", function() {
 		var arch = 'android',
 			build_opts = {DEBUG:true,OBFUSCATE:false},
 			state = {};
-		source = '"use hyperloop"\nvar e = new java.io.InvalidClassException();\nvar c = e.classname;';
+		source = '"use hyperloop"\nvar e = new java.io.InvalidClassException(\'String\');\nvar c = e.classname;';
 
 		should.exist(javaMetabase);
 
@@ -413,7 +439,7 @@ describe("Android Compiler front-end", function() {
 		var arch = 'android',
 			build_opts = {DEBUG:true,OBFUSCATE:false},
 			state = {};
-		source = '"use hyperloop"\nvar e = new java.io.InvalidClassException();\nvar c = e.classname.toCharArray();';
+		source = '"use hyperloop"\nvar e = new java.io.InvalidClassException(\'String\');\nvar c = e.classname.toCharArray();';
 
 		should.exist(javaMetabase);
 
@@ -443,7 +469,7 @@ describe("Android Compiler front-end", function() {
 		var arch = 'android',
 			build_opts = {DEBUG:true,OBFUSCATE:false},
 			state = {};
-		source = '"use hyperloop"\nvar e = new java.io.InvalidClassException();\ne = e.classname;';
+		source = '"use hyperloop"\nvar e = new java.io.InvalidClassException(\'String\');\ne = e.classname;';
 
 		should.exist(javaMetabase);
 
@@ -517,7 +543,7 @@ describe("Android Compiler front-end", function() {
 
 		should.exist(state.symbols);
 		state.symbols.should.be.an.Object;
-		should.exist(state.symbols.com_test_app_MyT_constructor);
+		should.exist(state.symbols.com_test_app_MyT_constructor_V);
 
 		should.exist(state.metabase.classes['com.test.app.MyT']);
 		should.exist(state.metabase.classes['com.test.app.MyT'].methods);
@@ -554,7 +580,7 @@ describe("Android Compiler front-end", function() {
 
 		should.exist(state.symbols);
 		state.symbols.should.be.an.Object;
-		should.exist(state.symbols.com_test_app_MyT2_constructor);
+		should.exist(state.symbols.com_test_app_MyT2_constructor_V);
 
 		should.exist(state.metabase.classes['com.test.app.MyT2']);
 		should.exist(state.metabase.classes['com.test.app.MyT2'].methods);
