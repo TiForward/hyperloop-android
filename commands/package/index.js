@@ -13,7 +13,7 @@ var fs = require('fs'),
 	util = hyperloop.util,
 	appc = require('node-appc'),
 	platform_library = require('../../lib/library');
-	androidlib = require('../../lib/android');
+	androidlib = require('../../lib/dev').require('androidlib');
 
 function createAndroidProjectTemplate(options, dest, done) {
 	appc.android.detect(function(results){
@@ -55,7 +55,7 @@ module.exports = new Command(
 			jscDir = path.join(homeDir, 'JavaScriptCore'),
 			jscDownloadDir = 'JavaScriptCore-Android-' + (options.target||'release'),
 			jscDownloadDirFull = path.join(jscDir, jscDownloadDir, 'JavaScriptCore', 'lib'),
-			android = androidlib.findAndroidPath(options,true),
+			android = androidlib.env.find(options,true),
 			templateDir = path.join(__dirname,'..','..','templates');
 
 		// FIXME on Android srcdir is missing

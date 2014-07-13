@@ -6,10 +6,10 @@ var spawn = require('child_process').spawn,
 	hyperloop = require('../../lib/dev').require('hyperloop-common'),
 	log = hyperloop.log,
 	Command = hyperloop.Command,
-	androidlib = require('../../lib/android');
+	androidlib = require('../../lib/dev').require('androidlib');
 
 function tailLog(options,callback) {
-	var android = androidlib.findAndroidPath(options,true),
+	var android = androidlib.env.find(options,true),
 		adb = path.join(android.sdkPath,'platform-tools','adb'),
 		child = spawn(adb,['logcat']),
 		// look for the start activity initial logging (we do in AppActivity) to get the PID for the app process.
@@ -59,7 +59,7 @@ function tailLog(options,callback) {
 }
 
 function startApp(options, callback) {
-	var android = androidlib.findAndroidPath(options,true),
+	var android = androidlib.env.find(options,true),
 		adb = path.join(android.sdkPath,'platform-tools','adb'),
 		args = ['shell','am','start','-n',options.appid+'/'+options.appid+'.'+options.name+'Activity'],
 		child = spawn(adb,args);
