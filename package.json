@@ -48,7 +48,8 @@
     "semver": "2.2.1",
     "uglify-js": "^2.4.13",
     "prompt": "~0.2.12",
-    "ejs": "~0.8.4"
+    "ejs": "~0.8.4",
+	"androidlib": "0.1.5"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
