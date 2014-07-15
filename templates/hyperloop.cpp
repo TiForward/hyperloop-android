@@ -517,6 +517,58 @@ EXPORTAPI jobject JSValueTo_JavaObject(JSContextRef ctx, JSValueRef value, JSVal
     return nullptr;
 }
 
+EXPORTAPI jobject JSValueTo_jobject(JSContextRef ctx, JSValueRef value, JSValueRef *exception)
+{
+    if (!JSValueIsObject(ctx, value))
+    {
+        return nullptr;
+    }
+    auto p = JSObjectGetPrivate(JSValueToObject(ctx,value,0));
+    if (p != nullptr)
+    {
+        auto nativeObject = Hyperloop::ToNativeObjectJava(p);
+        if (nativeObject == nullptr)
+        {
+            return nullptr;
+        }
+        return nativeObject->getObject();
+    }
+    return nullptr;
+}
+
+EXPORTAPI JSValueRef Hyperloop_Binary_InstanceOf(JSContextRef ctx, JSObjectRef function, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception) {
+    if (argumentCount < 2)
+    {
+        *exception = HyperloopMakeException(ctx, "Wrong arguments passed to IsInstanceOf");
+        return JSValueMakeUndefined(ctx);
+    }
+
+    auto isObject_a = JSValueIsObject(ctx, arguments[0]);
+    auto isObject_b = JSValueIsObject(ctx, arguments[1]);
+
+    if (isObject_a && isObject_b)
+    {
+        auto obj_a = JSValueTo_jobject(ctx, arguments[0], exception);
+        auto obj_b = JSValueTo_jobject(ctx, arguments[1], exception);
+
+        // nullptr means object is not a native object
+        if (obj_a == nullptr || obj_b == nullptr) {
+            return JSValueMakeBoolean(ctx, false);
+        }
+
+        Hyperloop::JNIEnv env;
+        jclass clazz = env->GetObjectClass(obj_b);
+        jboolean isInstance = env->IsInstanceOf(obj_a, clazz);
+        env->DeleteLocalRef(clazz);
+        if (env.CheckJavaException(ctx, exception)) {
+            return JSValueMakeBoolean(ctx, false);
+        }
+        return JSValueMakeBoolean(ctx, isInstance == JNI_TRUE ? true : false);
+    }
+
+    return JSValueMakeBoolean(ctx, false);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 EXPORTAPI JSValueRef HyperloopAppRequire(JSValueRef *exception);
 
