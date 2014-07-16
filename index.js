@@ -3,7 +3,8 @@ module.exports = {
 	defaultOptions: {
 		environment: 'dev',
 		appid: 'com.test.app',
-		arch: 'armeabi-v7a'
+		arch: 'armeabi-v7a',
+		skip_ir: true
 	},
 	dirname: __dirname
 };
