@@ -43,6 +43,7 @@ function antDebugInstall(options, project_dir, done) {
 				appid: options.appid,
 				name: options.name,
 				sdk: options.sdk,
+				arch: options.arch,
 				target: options.target ? options.target : 'device',
 				auto_exit: true
 			};
